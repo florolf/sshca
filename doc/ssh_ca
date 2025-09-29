@@ -1,0 +1,28 @@
+#!/bin/bash
+
+set -ueo pipefail
+
+if [[ -z "${KEY_ATTR_leaf_info_sshca+x}" ]]
+then
+	exit 0
+fi
+
+pubkey="$(ssh "$KEY_ATTR_leaf_info_sshca" "$LEAF_CHECKSUM")"
+if [[ "$?" != 0 ]]
+then
+	echo "failed to fetch leaf for checksum $LEAF_CHECKSUM"
+	exit 0
+fi
+
+actual_hash=$(echo "$pubkey" | ssh-ct-verify checksum)
+if [[ "$actual_hash" != "$LEAF_CHECKSUM" ]]
+then
+	cat <<EOF
+Pre-cert hash mismatch: Expected $LEAF_CHECKSUM, got $actual_hash.
+Raw cert is:
+$pubkey
+EOF
+	exit 0
+fi
+
+echo "$pubkey" | ssh-keygen -L -f -

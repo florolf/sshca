@@ -1,0 +1,23 @@
+[project]
+name = "sshca"
+description = "SSH CA"
+license = "Apache-2.0"
+readme = "README.md"
+authors = [
+    { name = "Florian Larysch", email = "fl@n621.de" }
+]
+dynamic = ["version"]
+requires-python = ">=3.11"
+dependencies = [
+    "apsw>=3.50.4.0",
+]
+
+[project.scripts]
+sshca = "sshca.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "src/sshca/__about__.py"
