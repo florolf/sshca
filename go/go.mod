@@ -1,10 +1,10 @@
-module example.com/ssh-ct
+module n621.de/sshca/ssh-ct-verify
 
-go 1.25.1
+go 1.25.5
 
 require (
-	golang.org/x/crypto v0.42.0
-	sigsum.org/sigsum-go v0.11.2
+	golang.org/x/crypto v0.46.0
+	sigsum.org/sigsum-go v0.13.1
 )
 
-require golang.org/x/sys v0.36.0 // indirect
+require golang.org/x/sys v0.39.0 // indirect

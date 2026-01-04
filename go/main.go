@@ -229,16 +229,22 @@ func main() {
 	switch cmd {
 	case "verify":
 		err = cmdVerify(args)
+
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		}
+
 	case "checksum":
 		err = cmdChecksum()
+
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+
 	case "help", "-h", "--help":
 		usage(false)
 	default:
 		usage(true)
-	}
-
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
 	}
 }

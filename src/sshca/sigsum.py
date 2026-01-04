@@ -24,12 +24,12 @@ def submit(config: dict[str, Any], raw_hash: bytes) -> Optional[str]:
     env = None
     if 'agent' in config:
         env = os.environ.copy()
-        env['SSH_AGENT_SOCK'] = config['agent']
+        env['SSH_AUTH_SOCK'] = config['agent']
 
-    result = subprocess.run(cmd, env=env, input=raw_hash.hex().encode(), capture_output=True)
+    logger.info('submitting CT entry')
+    result = subprocess.run(cmd, env=env, input=raw_hash.hex().encode(), stdout=subprocess.PIPE)
     if result.returncode != 0:
-        logger.error('sigsum submission failed:')
-        logger.error(result.stderr.decode())
+        logger.error('sigsum submission failed')
         return None
 
     return result.stdout.decode()

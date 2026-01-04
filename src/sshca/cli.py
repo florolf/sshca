@@ -52,13 +52,11 @@ def load_config(path: Path) -> dict[str, Any]:
 
     config = defaultdict(dict)
 
-    if 'agent' in toml['ca']:
-        config['ca']['agent'] = Path(toml['ca']['agent'])
-
     if 'sigsum' in toml['ca']:
         config['ca']['sigsum'] = toml['ca']['sigsum']
 
     config['ca']['pubkey'] = ssh.Pubkey.from_line(toml['ca']['pubkey'])
+    config['ca']['agent'] = Path(toml['ca']['agent'])
     config['ca']['db'] = Path(toml['ca']['db'])
 
     groups = toml.get('group', {})
@@ -103,7 +101,7 @@ def do_authorized_keys(config_path: Path, config: dict[str, Any]):
     cmd = Path(sys.argv[0]).resolve()
 
     for pubkey, body in config['keys'].items():
-        line = f'command="{cmd} {config_path.resolve()} ssh \\"{b64enc(pubkey, pad=False)}\\"",restrict {body['_obj']}'
+        line = f'command="{cmd} {config_path.resolve()} ssh \\"{b64enc(pubkey, pad=False)}\\"",restrict {body["_obj"]}'
 
         print(line)
 
@@ -184,6 +182,11 @@ def do_sign(config: dict[str, Any], pubkey, args):
     if args.valid_duration is not None:
         valid_before = min(valid_before, now + args.valid_duration)
 
+    if kcfg.get('no_valid_after', False):
+        valid_after = None
+    else:
+        valid_after = now - kcfg.get('valid_after_delta', 0)
+
     db = DB(config['ca']['db'])
 
     with db:
@@ -194,7 +197,7 @@ def do_sign(config: dict[str, Any], pubkey, args):
             identifier = identifier,
             principals = kcfg.get('principals', []),
             extensions = extensions,
-            valid_after = now - kcfg.get('valid_after_delta', 0),
+            valid_after = valid_after,
             valid_before = valid_before,
             serial = serial
         )

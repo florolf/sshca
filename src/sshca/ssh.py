@@ -244,13 +244,13 @@ class Certificate:
             principals = []
         self.principals = principals
 
-        if valid_before is None:
-            valid_before = 0
-        self.valid_before = valid_before
-
         if valid_after is None:
-            valid_after = 0xffffffffffffffff
+            valid_after = 0
         self.valid_after = valid_after
+
+        if valid_before is None:
+            valid_before = 0xffffffffffffffff
+        self.valid_before = valid_before
 
         if extensions is None:
             extensions = []
